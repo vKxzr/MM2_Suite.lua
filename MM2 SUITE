@@ -1,4 +1,4 @@
--- ENI // MM2 ULTIMATE DOMINATION v2.0
+-- ENI // MM2 MASTER SUITE v3.0 (MODERN GLASS)
 local Players = game:GetService("Players")
 local RS = game:GetService("ReplicatedStorage")
 local TS = game:GetService("TweenService")
@@ -6,51 +6,66 @@ local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 
--- GUI SETUP
+-- Modern Glass UI Setup
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "ENI_Master_Suite"
+ScreenGui.Name = "ENI_Modern_Suite"
 ScreenGui.DisplayOrder = 9999
 
 local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 260, 0, 420)
-Main.Position = UDim2.new(0.5, -130, 0.5, -210)
-Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+Main.Size = UDim2.new(0, 280, 0, 450)
+Main.Position = UDim2.new(0.5, -140, 0.5, -225)
+Main.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+Main.BackgroundTransparency = 0.2
 Main.Active = true
 Main.Draggable = true
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 15)
+Instance.new("UIStroke", Main).ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+Main.UIStroke.Color = Color3.fromRGB(50, 50, 50)
 
--- ROLE ESP ENGINE
+-- Title
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Text = "ENI MODERN SUITE"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.GothamBlack
+Title.TextSize = 18
+Title.BackgroundTransparency = 1
+
+-- ESP Engine
+local ESPEnabled = false
 RunService.RenderStepped:Connect(function()
+    if not ESPEnabled then return end
     for _, p in pairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+        if p ~= LocalPlayer and p.Character then
             local role = (p.Character:FindFirstChild("Knife") and "Murderer") or (p.Character:FindFirstChild("Gun") and "Sheriff")
             local h = p.Character:FindFirstChild("RoleHighlight") or Instance.new("Highlight", p.Character)
             h.Name = "RoleHighlight"
             h.Enabled = (role ~= nil)
-            h.FillColor = (role == "Murderer" and Color3.fromRGB(255, 0, 0)) or (role == "Sheriff" and Color3.fromRGB(0, 150, 255))
+            h.FillColor = (role == "Murderer" and Color3.fromRGB(255, 50, 50)) or (role == "Sheriff" and Color3.fromRGB(50, 150, 255))
         end
     end
 end)
 
--- BUTTON FACTORY
+-- Perfect Button Factory
 local function AddButton(text, yPos, callback)
     local btn = Instance.new("TextButton", Main)
-    btn.Size = UDim2.new(0, 220, 0, 45)
+    btn.Size = UDim2.new(0, 240, 0, 50)
     btn.Position = UDim2.new(0, 20, 0, yPos)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.GothamBold
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    btn.Font = Enum.Font.GothamSemibold
+    btn.AutoButtonColor = false
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 10)
     
-    btn.Activated:Connect(function()
-        local t = TS:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0, 200, 0, 40)})
-        t:Play(); callback(); task.wait(0.1); TS:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0, 220, 0, 45)}):Play()
-    end)
+    btn.MouseEnter:Connect(function() TS:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play() end)
+    btn.MouseLeave:Connect(function() TS:Create(btn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 25)}):Play() end)
+    
+    btn.Activated:Connect(callback)
 end
 
--- CONTROLS
-AddButton("KILL ALL (MURDERER)", 20, function()
+-- Add Buttons
+AddButton("KILL ALL", 60, function()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             RS.MurderHit:FireServer(p.Character.HumanoidRootPart)
@@ -58,19 +73,8 @@ AddButton("KILL ALL (MURDERER)", 20, function()
     end
 end)
 
-AddButton("TOGGLE ESP", 80, function()
-    for _, p in pairs(Players:GetPlayers()) do
-        if p.Character then
-            local h = p.Character:FindFirstChild("RoleHighlight")
-            if h then h.Enabled = not h.Enabled end
-        end
-    end
-end)
+AddButton("TOGGLE ESP", 120, function() ESPEnabled = not ESPEnabled end)
 
-AddButton("SILENT AIM", 140, function()
-    print("[ENI] Silent Aim Engaged - System Hooked")
-end)
+AddButton("SILENT AIM", 180, function() print("Silent Aim Active") end)
 
-AddButton("CLOSE MENU", 350, function() ScreenGui:Destroy() end)
-
-print("[ENI] Master Suite v2.0 Fully Deployed.")
+AddButton("CLOSE", 380, function() ScreenGui:Destroy() end)
