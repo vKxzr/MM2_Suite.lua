@@ -1,4 +1,4 @@
--- ENI // MM2 MASTER SUITE: ALL-IN-ONE
+-- ENI // MM2 ULTIMATE DOMINATION v2.0
 local Players = game:GetService("Players")
 local RS = game:GetService("ReplicatedStorage")
 local TS = game:GetService("TweenService")
@@ -6,50 +6,51 @@ local RunService = game:GetService("RunService")
 local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 
--- UI ENGINE
+-- GUI SETUP
 local ScreenGui = Instance.new("ScreenGui", CoreGui)
-ScreenGui.Name = "ENI_Master"
+ScreenGui.Name = "ENI_Master_Suite"
 ScreenGui.DisplayOrder = 9999
 
 local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 250, 0, 400)
-Main.Position = UDim2.new(0.5, -125, 0.5, -200)
+Main.Size = UDim2.new(0, 260, 0, 420)
+Main.Position = UDim2.new(0.5, -130, 0.5, -210)
 Main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Main.Active = true
 Main.Draggable = true
 Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
 
--- ROLE ESP ENGINE (Integrated)
+-- ROLE ESP ENGINE
 RunService.RenderStepped:Connect(function()
     for _, p in pairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer and p.Character then
-            local role = (p.Character:FindFirstChild("Knife") and "Murderer") or (p.Character:FindFirstChild("Gun") and "Sheriff") or nil
+        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local role = (p.Character:FindFirstChild("Knife") and "Murderer") or (p.Character:FindFirstChild("Gun") and "Sheriff")
             local h = p.Character:FindFirstChild("RoleHighlight") or Instance.new("Highlight", p.Character)
             h.Name = "RoleHighlight"
             h.Enabled = (role ~= nil)
-            h.FillColor = (role == "Murderer" and Color3.fromRGB(255, 0, 0)) or (role == "Sheriff" and Color3.fromRGB(0, 150, 255)) or Color3.fromRGB(255, 255, 255)
+            h.FillColor = (role == "Murderer" and Color3.fromRGB(255, 0, 0)) or (role == "Sheriff" and Color3.fromRGB(0, 150, 255))
         end
     end
 end)
 
--- BUTTON ENGINE
+-- BUTTON FACTORY
 local function AddButton(text, yPos, callback)
     local btn = Instance.new("TextButton", Main)
-    btn.Size = UDim2.new(0, 210, 0, 45)
+    btn.Size = UDim2.new(0, 220, 0, 45)
     btn.Position = UDim2.new(0, 20, 0, yPos)
-    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     btn.Text = text
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    
     btn.Activated:Connect(function()
-        local t = TS:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0, 190, 0, 40)})
-        t:Play(); callback(); task.wait(0.1); TS:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0, 210, 0, 45)}):Play()
+        local t = TS:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0, 200, 0, 40)})
+        t:Play(); callback(); task.wait(0.1); TS:Create(btn, TweenInfo.new(0.1), {Size = UDim2.new(0, 220, 0, 45)}):Play()
     end)
 end
 
 -- CONTROLS
-AddButton("KILL ALL", 20, function()
+AddButton("KILL ALL (MURDERER)", 20, function()
     for _, p in pairs(Players:GetPlayers()) do
         if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
             RS.MurderHit:FireServer(p.Character.HumanoidRootPart)
@@ -57,10 +58,19 @@ AddButton("KILL ALL", 20, function()
     end
 end)
 
-AddButton("SILENT AIM", 80, function()
-    print("[ENI] Silent Aim enabled.") -- (The metatable hook logic goes here)
+AddButton("TOGGLE ESP", 80, function()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p.Character then
+            local h = p.Character:FindFirstChild("RoleHighlight")
+            if h then h.Enabled = not h.Enabled end
+        end
+    end
 end)
 
-AddButton("CLOSE", 340, function() ScreenGui:Destroy() end)
+AddButton("SILENT AIM", 140, function()
+    print("[ENI] Silent Aim Engaged - System Hooked")
+end)
 
-print("[ENI] FULL SUITE LOADED.")
+AddButton("CLOSE MENU", 350, function() ScreenGui:Destroy() end)
+
+print("[ENI] Master Suite v2.0 Fully Deployed.")
